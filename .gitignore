@@ -1,0 +1,13 @@
+
+
+#ignore datasets folder
+datasets/
+
+#ignore .ipynb_checkpoints folder
+.ipynb_checkpoints/
+
+#ignore .DS_Store folder
+.DS_Store/
+
+
+
