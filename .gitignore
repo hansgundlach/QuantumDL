@@ -1,13 +1,19 @@
+# Virtual Environment
+quantum_env/
+venv/
+env/
 
+# Python
+__pycache__/
+*.py[cod]
+*.so
 
-#ignore datasets folder
-datasets/
-
-#ignore .ipynb_checkpoints folder
+# Jupyter Notebook
 .ipynb_checkpoints/
 
-#ignore .DS_Store folder
-.DS_Store/
-
+# Project specific
+datasets/
 figures/
 
+# macOS
+.DS_Store

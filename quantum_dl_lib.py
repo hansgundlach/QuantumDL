@@ -11,6 +11,9 @@ from scipy.optimize import curve_fit
 import sympy as sp
 from matplotlib.font_manager import FontProperties
 
+# print hello
+# print("hello")
+
 
 # enhanced binary search intersection robust version for large numbers
 # default tolerance is 1e-5
@@ -154,6 +157,7 @@ MAX_YEAR = 2050
 # MAX_PROBLEM_SIZE = 1e50
 # MIN_YEAR = 2025
 # MAX_YEAR = 2050
+
 
 # default quantum and classical runtime if not specified
 classical_runtime = "n**3"
