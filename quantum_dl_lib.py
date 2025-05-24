@@ -6,13 +6,9 @@ import math
 import pandas as pd
 from copy import deepcopy
 from decimal import Decimal, getcontext, DecimalException
-import math
 from scipy.optimize import curve_fit
-import sympy as sp
 from matplotlib.font_manager import FontProperties
-
-# print hello
-# print("hello")
+import quantum_dl_lib
 
 
 # enhanced binary search intersection robust version for large numbers
@@ -125,19 +121,19 @@ def binary_search_intersection(
 # #constants in different format
 fidelity_improvement_rate = 0.28
 gate_speed_improvement_rate = 0.14
-classical_speed_init = 1 / (1.5 * 1e9)  #
+classical_speed_init = 1 / (1.5 * 1e9)  # Nividia H100 GPU clock speed
 superconducting_gate_speed_init = 1e-6  # (1/(1.5*1e9))*(10**3.78) # seconds #overhead taken from quantum economic advantage calculator
-initial_error = 10 ** (-2.5)
+initial_error = 10 ** (-2.5)  # initial error from error graphs
 classical_speed_improvement_rate = 0.3  # moore's law improvement
 number_of_processors = 1e8  # processor overehead done from calculations for GPUs
 # time_upper_limt = 3.14*1e7 # 1-year of seconds
 connectivity_penalty_exponent = 0.0  # connectivity penalty for physical to logical qubit ratio in this range. default no asymptotic connectivity penality
-time_upper_limit = 4 * (3.14 * 1e7) / 52  # 1 month computation time
+time_upper_limit = (3.14 * 1e7) / 12  # 1 month computation time
 scode_init_speed_overhead = 1e2  # slowdown overhead from Choi, Neil, and Moses
-alg_overhead_qubit = 1e1  # algorithm overhead in logical qubits
+alg_overhead_qubit = 1e0  # algorithm overhead in logical qubits
 alg_overhead_qspeed = 1e0  # algorithm speed overhead based on constants this is exclusivly for quantum algorithm
 classical_alg_overhead = 1e0
-MAX_PROBLEM_SIZE = 1e50
+MAX_PROBLEM_SIZE = 1e51
 MIN_YEAR = 2025
 MAX_YEAR = 2050
 
@@ -157,7 +153,6 @@ MAX_YEAR = 2050
 # MAX_PROBLEM_SIZE = 1e50
 # MIN_YEAR = 2025
 # MAX_YEAR = 2050
-
 
 # default quantum and classical runtime if not specified
 classical_runtime = "n**3"
@@ -180,8 +175,9 @@ SOTA_ROADMAP = {
     2025: 1959,
     2030: 24352,
 }
+percentile_90_roadmap = {2025: 305.13, 2030: 1315}
 
-default_roadmap = IBM_ROADMAP
+default_roadmap = percentile_90_roadmap
 
 
 # gives the physical to logical overhead based on the surface code formula
@@ -195,11 +191,11 @@ def surface_code_formula(pP: float) -> float:
     return f_QEC**-1
 
 
-#
-
-
 def problem_size_qubit_feasible(
-    roadmap: dict, year: int, alg_overhead: float = 1, q_prob_size="log"
+    year: int,
+    roadmap: dict = default_roadmap,
+    alg_overhead: float = 1,
+    q_prob_size="log",
 ) -> float:
 
     # fit exponential to roadmap
@@ -221,7 +217,7 @@ def problem_size_qubit_feasible(
         # print(f"Fitting failed for {label}")
         return None
     surf_overhead = surface_code_formula(
-        initial_error * fidelity_improvement_rate ** (year - 2025)
+        initial_error * (1 - fidelity_improvement_rate) ** (year - 2025)
     )
     if q_prob_size == "log":
         qubit_number = min(
@@ -242,7 +238,7 @@ def quantum_seconds_per_operation(year):
         1 - gate_speed_improvement_rate
     ) ** (year - 2025)
     # with error correction
-    fidelity_year = initial_error * fidelity_improvement_rate ** (year - 2025)
+    fidelity_year = initial_error * (1 - fidelity_improvement_rate) ** (year - 2025)
     proportional_change = (surface_code_formula(fidelity_year)) / surface_code_formula(
         initial_error
     )
